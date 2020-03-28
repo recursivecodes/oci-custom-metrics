@@ -1,4 +1,4 @@
-# dbaas-metrics
+# oci-custom-metrics
 
 This is an example of using the OCI Java SDK to publish custom metrics in the Oracle Cloud. This example runs a job every 60 seconds to publish DB load and storage numbers.
 
