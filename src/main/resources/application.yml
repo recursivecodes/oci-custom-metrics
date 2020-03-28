@@ -1,0 +1,17 @@
+micronaut:
+  application:
+    name: dbaas-metrics
+datasources:
+  default:
+    url: ${DATASOURCES_DEFAULT_URL}
+    username:  ${DATASOURCES_DEFAULT_USERNAME}
+    password:  ${DATASOURCES_DEFAULT_PASSWORD}
+    driverClassName: oracle.jdbc.driver.OracleDriver
+codes:
+  recursive:
+    use-instance-principal: ${CODES_RECURSIVE_USE_INSTANCE_PRINCIPAL:true}
+    oci-config-path: ${CODES_RECURSIVE_OCI_CONFIG_PATH:~/.oci/config}
+    oci-profile: ${CODES_RECURSIVE_OCI_PROFILE:DEFAULT}
+    metrics-compartment-ocid: ${CODES_RECURSIVE_METRICS_COMPARTMENT_OCID}
+    metrics-namespace: ${CODES_RECURSIVE_METRICS_NAMESPACE}
+    db-ocid: ${CODES_RECURSIVE_DB_OCID}
