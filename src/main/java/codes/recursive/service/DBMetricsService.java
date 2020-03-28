@@ -11,7 +11,6 @@ import com.oracle.bmc.monitoring.model.Datapoint;
 import com.oracle.bmc.monitoring.model.MetricDataDetails;
 import com.oracle.bmc.monitoring.model.PostMetricDataDetails;
 import com.oracle.bmc.monitoring.requests.PostMetricDataRequest;
-import com.oracle.bmc.monitoring.responses.PostMetricDataResponse;
 import io.micronaut.core.beans.BeanIntrospection;
 import io.micronaut.core.beans.BeanProperty;
 
@@ -31,13 +30,13 @@ import java.util.Map;
 public class DBMetricsService {
 
     private MonitoringClient monitoringClient;
-    private BasicAuthenticationDetailsProvider provider;
     private final RecursiveCodesConfig config;
     private final DataSource dataSource;
 
-    public DBMetricsService(RecursiveCodesConfig config, DataSource dataSource ) throws IOException, SQLException {
+    public DBMetricsService(RecursiveCodesConfig config, DataSource dataSource ) throws IOException {
         this.config = config;
         this.dataSource = dataSource;
+        BasicAuthenticationDetailsProvider provider;
         if( config.getUseInstancePrincipal() ) {
             provider = InstancePrincipalsAuthenticationDetailsProvider.builder().build();
         }
@@ -60,7 +59,7 @@ public class DBMetricsService {
             BigDecimal currentValue = loadProp.get(dbLoad);
 
             Datapoint loadDp = Datapoint.builder()
-                    .value(currentValue.doubleValue())
+                    .value(currentValue != null ? currentValue.doubleValue() : 0)
                     .timestamp(new Date())
                     .build();
 
@@ -83,7 +82,7 @@ public class DBMetricsService {
             BigDecimal currentValue = storageProp.get(dbStorage);
 
             Datapoint storageDp = Datapoint.builder()
-                    .value(currentValue.doubleValue())
+                    .value(currentValue != null ? currentValue.doubleValue() : 0)
                     .timestamp(new Date())
                     .build();
 
@@ -105,7 +104,7 @@ public class DBMetricsService {
         PostMetricDataRequest postMetricDataRequest = PostMetricDataRequest.builder()
                 .postMetricDataDetails(postMetricDataDetails)
                 .build();
-        PostMetricDataResponse postMetricDataResponse = monitoringClient.postMetricData(postMetricDataRequest);
+        monitoringClient.postMetricData(postMetricDataRequest);
     }
 
     public DBLoad getDBLoad() throws SQLException {
@@ -200,19 +199,19 @@ public class DBMetricsService {
                     "    AND rdb_time.inst_id = user_io.inst_id";
             ResultSet resultSet = connection.createStatement().executeQuery(qry);
             resultSet.next();
-            dbLoad.setExecutions(resultSet.getBigDecimal("executions"));
-            dbLoad.setUserCalls(resultSet.getBigDecimal("usercalls"));
-            dbLoad.setParses(resultSet.getBigDecimal("parses"));
-            dbLoad.setCommits(resultSet.getBigDecimal("commits"));
-            dbLoad.setRollbacks(resultSet.getBigDecimal("rollbacks"));
-            dbLoad.setLogons(resultSet.getBigDecimal("logons"));
-            dbLoad.setTotalPhysicalReads(resultSet.getBigDecimal("totalphysicalreads"));
-            dbLoad.setTotalPhysicalWrites(resultSet.getBigDecimal("totalphysicalwrites"));
-            dbLoad.setPhyReadTotalIOReqs(resultSet.getBigDecimal("phyreadtotalioreqs"));
-            dbLoad.setPhyWriteTotalIOReqs(resultSet.getBigDecimal("phywritetotalioreqs"));
-            dbLoad.setDbCpu(resultSet.getBigDecimal("dbcpu"));
-            dbLoad.setDbTime(resultSet.getBigDecimal("dbtime"));
-            dbLoad.setUserIOTime(resultSet.getBigDecimal("useriotime"));
+            dbLoad.setExecutions( resultSet.getBigDecimal("executions" ));
+            dbLoad.setUserCalls( resultSet.getBigDecimal("usercalls" ));
+            dbLoad.setParses( resultSet.getBigDecimal("parses" ));
+            dbLoad.setCommits( resultSet.getBigDecimal("commits" ));
+            dbLoad.setRollbacks( resultSet.getBigDecimal("rollbacks" ));
+            dbLoad.setLogons( resultSet.getBigDecimal("logons" ));
+            dbLoad.setTotalPhysicalReads( resultSet.getBigDecimal("totalphysicalreads" ));
+            dbLoad.setTotalPhysicalWrites( resultSet.getBigDecimal("totalphysicalwrites" ));
+            dbLoad.setPhyReadTotalIOReqs( resultSet.getBigDecimal("phyreadtotalioreqs" ));
+            dbLoad.setPhyWriteTotalIOReqs( resultSet.getBigDecimal("phywritetotalioreqs" ));
+            dbLoad.setDbCpu( resultSet.getBigDecimal("dbcpu" ));
+            dbLoad.setDbTime( resultSet.getBigDecimal("dbtime" ));
+            dbLoad.setUserIOTime( resultSet.getBigDecimal("useriotime" ));
         }
         return dbLoad;
     }
@@ -254,9 +253,9 @@ public class DBMetricsService {
                     "    tbsp_stats";
             ResultSet resultSet = connection.createStatement().executeQuery(qry);
             resultSet.next();
-            dbStorage.setTotalTablespaceSpace(resultSet.getBigDecimal("total_tablespace_space"));
-            dbStorage.setTotalSpaceUsed(resultSet.getBigDecimal("total_space_used"));
-            dbStorage.setTotalUsedPct(resultSet.getBigDecimal("total_used_pct"));
+            dbStorage.setTotalTablespaceSpace( resultSet.getBigDecimal("total_tablespace_space") );
+            dbStorage.setTotalSpaceUsed (resultSet.getBigDecimal("total_space_used") );
+            dbStorage.setTotalUsedPct( resultSet.getBigDecimal("total_used_pct") );
         }
         return dbStorage;
     }
